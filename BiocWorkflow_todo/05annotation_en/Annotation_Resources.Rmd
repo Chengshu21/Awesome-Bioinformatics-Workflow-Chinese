@@ -21,7 +21,7 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
 ---
 
-# Version Info
+# 版本信息
 ```{r, echo=FALSE, results="hide", warning=FALSE}
 suppressPackageStartupMessages({
 library('annotation')
@@ -35,34 +35,34 @@ library('annotation')
 **Package version**: `r packageVersion("annotation")`
 </p>
 
-# Introduction
+# 简介
 
-Annotation resources make up a significant proportion of the Bioconductor
-project[1].  And there are also a diverse set of online resources available
-which are accessed using specific packages.  This walkthrough will describe the
-most popular of these resources and give some high level examples on how to use
-them.
+注释资源在 Bioconductor 的项目中占很大比例【1】。
+此外，还可使用特定的包来获取一些允许访问的在线资源。
+这里将介绍使用得比较多的资源，并提供一些关于如何使用它们的高级示例。
 
-Bioconductor annotation resources have traditionally been used near the end of
-an analysis. After the bulk of the data analysis, annotations would be used
-interpretatively to learn about the most significant results.  But
-increasingly, they are also used as a starting point or even as an intermediate
-step to help guide a study that is still in progress.  In addition to this,
-what it means for something to be an annotation is also becoming less clear
-than it once was.  It used to be clear that annotations were only those things
-that had been established after multiple different studies had been performed
-(such as the primary role of a gene product).  But today many large data sets
-are treated by communities in much the same way that classic annotations once
-were: as a reference for additional comparisons.
 
-Another change that is underway with annotations in Bioconductor is in the way
-that they are obtained.  In the past annotations existed almost exclusively as
-separate annotation packages[2,3,4].  Today packages are still an enormous
-source of annotations. The current
-[release repository](http://bioconductor.org/packages/release/BiocViews.html#___AnnotationData)
-contains over eight hundred annotation packages. This table summarizes some
-of the more important classes of annotation objects that are often accessed
-using packages:
+
+在过去，一般在分析结束时使用 Bioconductor 注释资源进行注释。
+进行大量的数据分析之后，都会使用注释信息来解析最重要的分析结果。
+由于注释信息使用得越来越多，在分析起始或是中间某个步骤也会应用它们，
+从而帮助指导仍在进行中的研究。除此之外，注释的含义也变得不像以前那么明确。  
+习惯上认为，注释只是在进行了多次不同的研究（如基因产物的主要作用）之后才建立起来的东西。
+但如今，社区用与以往经典注释几近相同的注释方式来解析大型数据集，即将之作为附加比较的参考。 
+
+
+
+
+
+
+ Bioconductor 中的注释资源的获取方式也发生了变化。
+以往的注释资源几乎都是以独立的注释包的形式存在【2,3,4】。
+而在今天，注释包含有大量注释资源。
+目前存储库[release repository](http://bioconductor.org/packages/release/BiocViews.html#___AnnotationData)
+有 800 多个的注释包。 下表总结了经常使用包访问的部分重要的注释对象的类：
+
+
+
 
 <style>
 table, th, td {
@@ -139,25 +139,25 @@ th {
   </tbody>
 </table>
 
-But in spite of the popularity of annotation packages, annotations are
-increasingly also being pulled down from web services like biomaRt[5,6,7] or
-from the AnnotationHub[8].  And both of these represent enormous resources for
-annotation data.
-
-In part because of the rapidly evolving landscape, it is currently impossible
-in a single document to cover every possible annotation or even every kind of
-annotation present in Bioconductor. So here we will instead go over the most
-popular annotation resources and describe them in a way intended to expose
-common patterns used for accessing them. The hope is that a user with this
-information will be able to make educated guesses about how to find and use
-additional resources that will inevitably be added later.  Topics that will be
-covered will include the following:
+尽管注释包很受欢迎，但是提供 Web 服务（如 **biomaRt**【5,6,7】 ）的包和 **AnnotationHub**【8】
+包仍然撤下了越来越多的注释资源。这两种包都含有大量的注释资源。
 
 
-# Set Up
 
-In this chapter we make use of several Bioconductor packages.  You can install
-them with `BiocManager::install()`:
+由于快速发展，目前很难发现 Bioconductor 的单个文档包含有所有可能的注释，甚至每种注释。
+因此，在这里我们将在一定程度上介绍并描述最流行的注释资源，旨在公开访问它们的常见模式。
+希望拥有此信息的用户能够对如何查找和使用必需的附加资源进行有根据的猜测。 
+主题将涵盖以下内容：
+
+
+
+
+
+
+# 安装
+
+本章我们会用到部分 Bioconductor 包。 您可以使用 `BiocManager::install()` 进行安装： 
+
 
 ```{r, eval=FALSE}
 if (!"BiocManager" %in% rownames(installed.packages()))
@@ -169,22 +169,22 @@ BiocManager::install(c("AnnotationHub", "Homo.sapiens",
            "BSgenome.Hsapiens.UCSC.hg19", "biomaRt",
            "TxDb.Athaliana.BioMart.plantsmart22"))
 ```
-The usage of the installed packages will be described in detail within the
-Usage section.
+已安装包的使用方法将会在使用部分进行详细阐述。
 
 
-# Using AnnotationHub
 
-The top of the list for learning about annotation resources is the relatively
-new AnnotationHub package[8]. The AnnotationHub was created to provide a
-convenient access point for end users to find a large range of different
-annotation objects for use with Bioconductor. Resources found in the
-AnnotationHub are easy to discover and are presented to the user as familiar
-Bioconductor data objects. Because it is a recent addition, the AnnotationHub
-allows access to a broad range of annotation like objects, some of which may
-not have been considered annotations even a few years ago.  To get started with
-the AnnotationHub users only need to load the package and then create a local
-AnnotationHub object like this:
+# 使用 AnnotationHub
+
+在注释资源列表中靠前的是相对较新的 **AnnotationHub** 包【8】。
+创建 AnnotationHub 对象是为了给最终用户提供一个通过 Bioconductor 能够查找大量不同注释对象的便捷接入点。
+在 **AnnotationHub** 包中很容易找到注释资源并且以熟悉的 Bioconductor 数据对象形式呈现给用户。
+由于它是最近才添加的， 因此 AnnotationHub 允许访问各种形式的注释（如对象），其中一些注释在几年前还不被视为注释。
+用户开始使用 AnnotationHub ，只需要加载包，然后创建一个本地 AnnotationHub 对象，如下所示：
+
+
+
+
+
 
 ```{r, echo=FALSE}
 library(annotation)
@@ -195,120 +195,120 @@ ah <- AnnotationHub()
 ah <- AnnotationHub()
 ```
 
-The very 1st time that you call the AnnotationHub, it will create a cache
-directory on your system and download the latest metadata for the hubs current
-contents.  From that time forward, whenever you download one of the hubs data
-objects, it will also cache those files in the local directory so that if you
-request the information again, you will be able to access it quickly.  
+第一次调用 AnnotationHub() 时，它将在系统里创建一个缓存目录，并下载 hubs 当前内容的最新元数据。
+此时， 当您下载 hubs 数据对象时，它们也会缓存在本地目录中，然后当您再次请求信息的时候，
+这些数据文件能被快速访问。
 
-The show method of an AnnotationHub object will tell you how many resources are
-currently accessible using that object as well as give a high level overview of
-the most common kinds of data present.
+
+
+AnnotationHub 对象的结果显示了您当前可以使用该对象访问的资源数量，
+并同时给出最常见的数据类型的高级概述。
+
 
 ```{r}
 ah
 ```
 
-As you can see from the object above, there are a LOT of different resources
-available.  So normally when you get an AnnotationHub object the 1st thing you
-want to do is to filter it to remove unwanted resources.
+正如您从上述对象中所看到的，有很多不同的可用资源。
+因此，通常当您获得 AnnotationHub 对象之后首先要做的就是进行筛选，
+从而删除不需要的资源。
 
-Fortunately, the AnnotationHub has several different kinds of metadata that you
-can use for searching and subsetting.  To see the different categories all you
-need to do is to type the name of your AnnotationHub object and then tab
-complete from the '$' operator.  And to see all possible contents of one of
-these categories you can pass that value in to unique like this:
+幸运的是， AnnotationHub 具有几种用于搜索和筛选的不同类型的元数据。 
+键入您的 AnnotationHub 对象的名称，然后通过 「$」 运算符补全命令可以查看对象中不同的类别。
+要查看单一类别中的所有可能内容，可以将该值传递给 unique() ，如下所示:
+
+
 
 ```{r}
 unique(ah$dataprovider)
 ```
 
-One of the most valuable ways in which the data is labeled is according to the
-kind of R object that will be returned to you.
+标记数据的最有意义的方法之一是根据能够返回给您的R对象类型来标记数据。
+
 
 ```{r}
 unique(ah$rdataclass)
 ```
 
-Once you have identified which sorts of metadata you would like to use to find
-your data of interest, you can then use the subset or query methods to reduce
-the size of the hub object to something more manageable.  For example you could
-select only those records where the string 'GRanges' was in the metadata.  As
-you can see GRanges are one of the more popular formats for data that comes
-from the AnnotationHub.
+确定要用于查找感兴趣的数据的哪些类型元数据后,
+可以使用子集或查询方法将中心对象的大小减小到更易于管理的大小。
+一旦您已经确定用哪些类型的元数据来查找您所感兴趣的数据，
+您就能用 subset() 或者 query() 方法缩减 hub 对象的大小，以便于更好的管理对象。
+比如说，您选择元数据中只有字符串 「GRanges」 所在的记录。
+如您之前所看到的， GRanges 是 AnnotationHub 对象中最流行的格式之一。
 
 ```{r}
 grs <- query(ah, "GRanges")
 grs
 ```
 
-Or you can use subsetting to only select for matches on a specific field
+或者您可以使用提取子集的方式，仅选择特定字段上的匹配项
 
 ```{r}
 grs <- ah[ah$rdataclass == "GRanges",]
-```
 
-The subset function is also provided.
+```
+ subset() 函数也有这种筛选功能。
 
 ```{r}
 orgs <- subset(ah, ah$rdataclass == "OrgDb")
 orgs
 ```
 
-And if you really need access to all the metadata you can extract it as a
-DataFrame using mcols() like so:
+实际上如果您需要访问所有元数据，则可以用 mcols() 将其提取为 DataFrame 格式的数据对象，如下所示:
+
 
 ```{r}
 meta <- mcols(ah)
 ```
 
-Also if you are a fan of GUI's you can use the display method to look at your
-data in a browser and return selected rows back as a smaller AnnotationHub
-object like this:
+此外，如果您是 GUI （图形用户界面）的粉丝，则可以使用 dispaly() 方法在浏览器中查看数据，
+并将所选行返回为较小的 AnnotationHub 对象，如下所示：
+
 
 ```{r, eval=FALSE}
 sah <- display(ah)
 ```
 
-Calling this method will produce a web based interface like the one pictured
-here:
+调用此方法将生成基于 Web 的界面，如下图所示:
+
 
 <img src="display.png" width="100%">
 
 
-Once you have the AnnotationHub object pared down to a reasonable size, and are
-sure about which records you want to retrieve, then you only need to use the
-'[[' operator to extract them.  Using the '[[' operator, you can extract by
-numeric index (1,2,3) or by AnnotationHub ID.  If you choose to use the former,
-you simply extract the element that you are interested in.  So for our chain
-example, you might just want to 1st one like this:
+一旦将 AnnotationHub 对象缩减到合理的大小，并确定要检索哪些字段，
+那您只需使用 「[[」 运算符来提取它们。
+使用 「[[」 运算符，您就可以按数字索引 (1,2,3) 或 AnnotationHub ID 进行提取。 
+如果选择使用前者，只需提取您感兴趣的元素即可。 因此，对于我们的一系列范例，您可能只想用第一个索引，如下所示: 
+
+
 
 ```{r}
 res <- grs[[1]]
 head(res, n=3)
 ```
 
-## AnnotationHub exercises
+## AnnotationHub 练习
 
-Exercise 1: Use the AnnotationHub to extract UCSC data that is from Homo
-sapiens and also specifically from the hg19 genome. What happens to the hub
-object as you filter data at each step?
+练习 1: 使用 AnnotationHub 来提取 UCSC 数据库中人的 hg19 基因组数据。在筛选每一步的数据时，
+ hub 对象会发生什么情况？
 
-Exercise 2 Now that you have basically narrowed things down to the hg19
-annotations from UCSC genome browser, lets get one of these annotations.  Find
-the oreganno track and save it into a local variable.  
+
+练习 2: 您现在基本上已经将内容缩小到 UCSC 基因组浏览器的 hg19 基因组注释，
+让我们获取这些注释之一。查找 oreganno 字段并将其保存到局部变量中。
+
 
 <p class="back_to_top">[ <a href="#top">Back to top</a> ]</p>
 
 
-# OrgDb objects
+# OrgDb 对象
 
-At this point you might be wondering: What is this OrgDb object about?  OrgDb
-objects are one member of a family of annotation objects that all represent
-hidden data through a shared set of methods.  So if you look closely at the dog
-object created below you can see it contains data for Canis familiaris
-(taxonomy ID = 9615).  You can learn a little more about it by learning about
-the columns method.
+此时您可能有个疑问： OrgDb 对象是关于什么的？ 
+OrgDb 对象是注释对象系列中的一个成员，
+所有注释对象都通过一组共享的方法表示所隐藏的数据。 
+因此，如果您仔细看看下面创建的 dog 对象, 您可以看到它包含 Canis familiaris 数据( taxonomy ID = 9615)。
+通过 columns() 函数，您可以更多地了解 dog 对象。
+
 
 ```{r}
 dog <- query(orgs, "Canis familiaris")[[1]]
@@ -319,162 +319,162 @@ dog
 columns(dog)
 ```
 
-The columns method gives you a vector of data types that can be retrieved from
-the object that you call it on.  So the above call indicates that there are
-several different data types that can be retrieved from the tetra object.
+columns() 函数允许从该对象中调用能检索到的数据类型矢量。 
+因此，上述调用结果表示可以从 tetra 对象检索多种不同的数据类型。
+ 
 
-A very similar method is the keytypes method, which will list all the data
-types that can also be used as keys. 
+一个类似的函数是 keytype() ，它将列出所有也可以用作关键词的数据类型。
+
 
 ```{r}
 keytypes(dog)
 ```
 
-In many cases most of the things that are listed as columns will also come back
-from a keytypes call, but since these two things are not guaranteed to be
-identical, we maintain two separate methods.
+大多数情况下，结果列出的大部分内容也能通过 keytypes() 调用返回，
+但是由于这两个函数功能并不能保证完全相同，所以我们仍然单独使用这两个方法。
 
-Now that you can see what kinds of things can be used as keys, you can call the
-keys method to extract out all the keys of a given key type.
+
+这时您能看到哪些类型的对象可用为关键词，可以调用 keys() 函数来提取给定关键词类型的所有关键词。
+
 
 ```{r}
 head(keys(dog, keytype="ENTREZID"))
 ```
 
-This is useful if you need to get all the IDs of a particular kind but the keys
-method has a few extra arguments that can make it even more flexible.  For
-example, using the keys method you could also extract the gene SYMBOLS that
-contain "COX" like this:
+keys() 函数中额外的一些参数对获得特定类型的所有 ID 非常有用。
+例如，使用 keys() ，您还可以像这样提取含有 「COX」 的基因符号:
+
+
 
 ```{r}
 keys(dog, keytype="SYMBOL", pattern="COX")
 ```
 
-Or if you really needed an other keytype, you can use the column argument to
-extract the ENTREZ GENE IDs for those gene SYMBOLS that contain the string
-"COX":
+或者，如果您确实需要其他的关键词类型（ keytype ），可以使用函数中 column 参数
+提取包含字符串 「COX」 的基因符号的 ENTREZ 基因 ID:
+
 
 ```{r}
 keys(dog, keytype="ENTREZID", pattern="COX", column="SYMBOL")
 ```
 
-But often, you will really want to extract other data that matches a particular
-key or set of keys.  For that there are two methods which you can use.  The
-more powerful of these is probably select.  Here is how you would look up the
-gene SYMBOL, and REFSEQ id for specific entrez gene ID.
+但通常来说，您会想要提取与特定关键词或一组关键词匹配的其他数据。
+这里有两种方法可供您选择使用。其中功能更强大的可能是 select() 。
+下面是如何通过查找基因符号，以及 REFSEQ ID 来查找特定的 entrez 基因 ID。
+
 
 ```{r}
 select(dog, keys="804478", columns=c("SYMBOL","REFSEQ"), keytype="ENTREZID")
 ```
 
-When you call it, select will return a data.frame that attempts to fill in
-matching values for all the columns you requested.  However, if you ask select
-for things that have a many to one relationship to your keys it can result in
-an expansion of the data object that is returned.  For example, watch what
-happens when we ask for the GO terms for the same entrez gene ID:
+调用 select() 将返回一个 data.frame ，该数据框尝试为所需要的列填充相匹配的值。
+但是，如果您用 select() 提取具有多对一关系的关键词内容，则可能会导致返回数据对象的扩展内容。
+看看当我们为相同的 entrez 基因 ID 提取 GO 术语时会发生什么:
+
+
 
 ```{r}
 select(dog, keys="804478", columns="GO", keytype="ENTREZID")
 ```
 
-Because there are several GO terms associated with the gene "804478", you end
-up with many rows in the data.frame. This can become problematic if you then
-ask for several columns that have a many to one relationship to the original
-key. If you were to do that, not only would the result multiply in size, it
-would also become really hard to use.  A better strategy is to be selective
-when using select.
+因为有多个 GO 术语与基因 「804478」 相关联，所以在 data.frame 中会有很多行。
+如果您查找的几个列与原始关键词具有多对一关系，那么可能会出现问题。
+这样做的话，结果不仅会成倍增长，而且会变得非常难用。
+更好的策略是在调用 select() 时使用具有选择性的关键词。
 
-Sometimes you might want to look up matching results in a way that is simpler
-than the data.frame object that select returns.  This is especially true when
-you only want to look up one kind of value per key.  For these cases, we
-recommend that you look at the mapIds method.  Lets look at what happens if
-request the same basic information as in our recent select call, but instead
-using the mapIds method:
+
+
+
+有时，您可能想以一种比 select() 返回 data.frame 对象更简单的方式来查找匹配结果。
+当您只想为每个关键词查找一种值时，这一点尤其重要。
+对于这些情况，我们建议您查看 mapIds() 函数。
+让我们看看，使用 mapIds() 来查找与最近 select() 调用结果相同的基本信息时会发生什么情况： 
+
 
 ```{r}
 mapIds(dog, keys="804478", column="GO", keytype="ENTREZID")
 ```
 
-As you can see, the mapIds method allows you to simplify the result that is
-returned.  And by default, mapIds only returns the 1st matching element for
-each key.  But what if you really need all those GO terms returned when you
-call mapIds?  Well then you can make use of the mapIds multiVals argument.
-There are several options for this argument, we have already seen how by
-default you can return only the 'first' element.  But you can also return a
-'list' or 'CharacterList' object, or you can 'filter' out or return 'asNA' any
-keys that have multiple matches.  You can even define your own rule (as a
-function) and pass that in as an argument to multiVals.  Lets look at what
-happens when you return a list:
+如您所见， mapIds() 允许您简化返回的结果。
+默认情况下， mapIds() 只返回每个关键词的第一个匹配元素。
+但如果您真的需要调用 mapIds() 时返回所有 GO 术语呢?
+那么你可以利用 mapIds() 的 multiVals 参数。
+这个参数有多个选项，我们已经看到默认情况下只能返回 「first」 结果。
+但你也可以返回一个 「list」 或 「CharacterList」 对象，
+或者你可以用 「filter」 筛选或返回 「asNA」 有多个匹配的任何关键词。
+您甚至可以自定义规则（作为函数），并将其作为参数传递给 multiVals 参数。
+让我们看看返回一个列表时会发生什么:
+
 
 ```{r}
 mapIds(dog, keys="804478", column="GO", keytype="ENTREZID", multiVals="list")
 ```
 
-Now you know how to extract information from an OrgDb object, you might find it
-helpful to know that there is a whole family of other AnnotationDb derived
-objects that you can also use with these same five methods (keytypes(),
-columns(), keys(), select(), and mapIds()).  For example there are ChipDb
-objects, InparanoidDb objects and TxDb objects which contain data about
-microarray probes, inparanoid homology partners or transcript range information
-respectively.  And there are also more specialized objects like GODb or
-ReactomeDb objects which offer access to data from GO and reactome.  In the
-next section, we will be looking at one of the more popular classes of these
-objects: the TxDb object.
+现在，您知道了如何从 OrgDb 对象中提取信息，
+您可能会发现，如果知道一系列其他 AnnotationDb 派生的对象，
+使用这五种方法（ keytypes()、 columns()、 keys()、 select() 和 mapIds()）也是非常有帮助的。
+例如， ChipDb 对象、 InparanoidDb 对象和 TxDb 对象分别包含微阵列探针、inparanoid 同源信息或转录范围信息的数据。
+当然还有更专一的对象，比如 GODb 或 ReactomeDb 对象，
+它们提供访问 GO 和 reactome 数据库的权限。
+在下一节中，我们将看到这些对象中比较流行的 TxDb 对象。
 
-## OrgDb exercises
 
-Exercise 3: Look at the help page for the different columns and keytypes values
-with: help("SYMBOL").  Now use this information and what we just described to
-look up the entrez gene and chromosome for the gene symbol "MSX2".
 
-Exercise 4: In the previous exercise we had to use gene symbols as keys.  But
-in the past this kind of behavior has sometimes been inadvisable because some
-gene symbols are used as the official symbol for more than one gene.  To learn
-if this is still happening take advantage of the fact that entrez gene ids are
-uniquely assigned, and extract all of the gene symbols and their associated
-entrez gene ids from the org.Hs.eg.db package. Then check the symbols for
-redundancy.
+
+## OrgDb 练习
+
+练习 3: 使用 help("SYMBOL") 查看帮助页面中不同的 columns 和 keytypes 参数值。
+现在利用这个信息和我们刚才描述的来查找基因符号 「MSX2」 的 entrez 基因和其染色体。
+
+
+练习 4: 在之前的练习中，我们使用基因符号作为关键词。
+但在过去，这种取值行为有时是不可取的，因为一些基因符号被用作多个基因的官方符号。
+要了解这种情况是否仍然存在，利用 entrez 基因 ID 是唯一分配的这一事实，
+并从 org.Hs.eg.db 包中提取所有的基因符号及其相关的 entrez 基因 ID 。
+然后检查符号是否冗余。
+
+
 
 <p class="back_to_top">[ <a href="#top">Back to top</a> ]</p>
 
 
-# TxDb Objects
+# TxDb 对象
 
-As mentioned before, TxDb objects can be accessed using the standard set of
-methods: keytypes(), columns(), keys(), select(), and mapIds().  But because
-these objects contain information about a transcriptome, they are often used to
-compare range based information to these important features of the genome[3,4].
-As a result they also have specialized accessors for extracting out ranges that
-correspond to important transcriptome characteristics.
+如前所述， TxDb 对象可以使用一系列标准方法进行访问:
+keytypes()， columns()， keys()， select() 和 mapIds()。
+但是，由于这些对象包含有关转录组的信息，它们通常用于比较基于转录组信息的范围和基因组的重要特征【3,4】。
+因此，它们也有特地用来提取与重要的转录组特征相对应的范围的专用访问器。
 
-Lets start by loading a TxDb object from an annotation package based on the
-UCSC ensembl genes track for Drosophila.  A common practice when loading these
-is to shorten the long name to 'txdb' (just as a convenience).  
+
+
+让我们从基于 UCSC ensembl 基因记录果蝇的注释包中加载 TxDb 对象开始。
+加载这些文件时的一个常见做法是将长名称缩短为 「txdb」 （只是为了方便）。
+
 
 ```{r}
 txdb <- TxDb.Hsapiens.UCSC.hg19.knownGene
 txdb
 ```
 
-Just by looking at the TxDb object, we can learn a lot about what data it
-contains including where the data came from, which build of the UCSC genome it
-was based on and the last time that the object was updated.  One of the most
-common uses for a TxDb object is to extract various kinds of transcript data
-out of it.  So for example you can extract all the transcripts out of the TxDb
-as a GRanges object like this:
+仅通过查看 TxDb 对象，我们就可以了解它包含哪些数据，
+数据来自何处，它基于 UCSC 基因组的哪个部分构建的，
+以及对象最后一次更新的时间。
+ TxDb 对象的常见用途之一是从中提取各种文本数据。
+例如，您可以从 TxDb 中提取所有的转录本作为 GRanges 对象，就像这样:
+
 
 ```{r}
 txs <- transcripts(txdb)
 txs
 ```
 
-Similarly, there are also extractors for exons(), cds(), genes() and
-promoters().  Which kind of feature you choose to extract just depends on what
-information you are after.  These basic extractors are fine if you only want a
-flat representation of these data, but many of these features are inherently
-nested. So instead of extracting a flat GRanges object, you might choose
-instead to extract a GRangesList object that groups the transcripts by the
-genes that they are associated with like this:
+同样，也存在 exons()， cds()， genes() 和 promoters() 等用于提取相关信息的函数。
+您选择提取哪一种特性取决于您之后想要获取的信息。
+如果您只想要这些数据的文本表示，那么这些基本提取函数都可以使用，
+但是本质上来说，这些文本的特性大多是嵌套的。因此，与其提取一个简单的 GRanges 对象，
+不如选择提取一个 GRangesList 对象，该对象根据与之相关的基因对转录本进行分组，如下图所示:
+
+
 
 ```{r}
 txby <- transcriptsBy(txdb, by="gene")
