@@ -28,11 +28,11 @@ library('annotation')
 })
 ```
 <p>
-**R version**: `r R.version.string`
+**R 版本**: `r R.version.string`
 <br />
-**Bioconductor version**: `r BiocManager::version()`
+**Bioconductor 版本**: `r BiocManager::version()`
 <br />
-**Package version**: `r packageVersion("annotation")`
+**Package 版本**: `r packageVersion("annotation")`
 </p>
 
 # 简介
@@ -178,7 +178,7 @@ BiocManager::install(c("AnnotationHub", "Homo.sapiens",
 在注释资源列表中靠前的是相对较新的 **AnnotationHub** 包【8】。
 创建 AnnotationHub 对象是为了给最终用户提供一个通过 Bioconductor 能够查找大量不同注释对象的便捷接入点。
 在 **AnnotationHub** 包中很容易找到注释资源并且以熟悉的 Bioconductor 数据对象形式呈现给用户。
-由于它是最近才添加的， 因此 AnnotationHub 允许访问各种形式的注释（如对象），其中一些注释在几年前还不被视为注释。
+由于它是最近才增加，因此 **AnnotationHub** 允许访问各种形式的注释（如对象），其中一些注释在几年前还不被视为注释。
 用户开始使用 AnnotationHub ，只需要加载包，然后创建一个本地 AnnotationHub 对象，如下所示：
 
 
@@ -481,47 +481,47 @@ txby <- transcriptsBy(txdb, by="gene")
 txby
 ```
 
-Just as with the flat extractors, there is a whole family of extractors
-available depending on what you want to extract and how you want it grouped.
-They include transcriptsBy(), exonsBy(), cdsBy(), intronsByTranscript(),
-fiveUTRsByTranscript() and threeUTRsByTranscript().
+就像使用文本提取函数一样，还有一系列其他用于不同内容和分组方式的提取函数。
+它们包括 transcriptsBy()、exonsBy()、cdsBy()、intronsByTranscript()、
+fiveUTRsByTranscript() 和 threeUTRsByTranscript()。
 
-When dealing with genomic data it is almost inevitable that you will run into
-problems with the way that different groups have adopted alternate ways of
-naming chromosomes.  This is because almost every major repository has cooked
-up their own slightly different way of labeling these important features.
 
-To cope with this, the Seqinfo object was invented and is attached to TxDb
-objects as well as the GenomicRanges extracted from these objects.  You can
-extract it using the seqinfo() method like this:
+在处理基因组数据时，难免会遇到不同群体采用不同的染色体命名方法的问题。
+这是因为几乎每个主要存储库的标记这些重要特性的方法不同。
+
+
+
+为了解决这个问题，创建了 Seqinfo 对象，
+并将其加入到 TxDb 对象以及从这些对象中提取的 GenomicRanges 中。
+您可以使用 seqinfo() 来进行提取，如下所示:
 
 ```{r}
 si <- seqinfo(txdb)
 si
 ```
 
-And since the seqinfo information is also attached to the GRanges objects
-produced by the TxDb extractors, you can also call seqinfo on the results of
-those methods like this:
+由于 seqinfo 信息也附加到了 TxDb 提取函数生成的 GRanges 对象上，
+所以您也能对这些函数的结果调用 seqinfo() ，如下所示:
+
 
 ```{r}
 txby <- transcriptsBy(txdb, by="gene")
 si <- seqinfo(txby)
 ```
 
-The Seqinfo object contains a lot of valuable data about which chromosome
-features are present, whether they are circular or linear, and how long each
-one is.  It is also something that will be checked against if you try to do an
-operation like 'findOverlaps' to compute overlapping ranges etc.  So it's a
-valuable way to make sure that the chromosomes and genome are the same for your
-annotations as the range that you are comparing them to.  But sometimes you may
-have a situation where your annotation object contains data that is comparable
-to your data object, but where it is simply named with a different naming
-style.  For those cases, there are helpers that you can use to discover what
-the current name style is for an object.  And there is also a setter method to
-allow you to change the value to something more appropriate.  So in the
-following example, we are going to change the seqlevelStyle from 'UCSC' to
-'ensembl' based naming convention (and then back again).
+ Seqinfo 对象包含许多有价值的数据，
+关于其染色体特征的存在，它们是圆形的还是线性的，以及每个染色体的长度。
+如果你想做一个像 「findOverlaps」 这样的操作来计算重叠范围等，你也需要检查 Seqinfo 对象。
+因此，这是一种有价值的方法，可确保染色体和基因组对您的注释来说与您所比较的范围相同。
+但是有时您可能会遇到这样的情况，注释对象包含与数据对象类似的数据，
+但是它只是使用不同的命名风格进行命名。
+对于这些情况，您可以使用一些帮助程序来查找对象的当前名称样式。
+还有一个 setter 方法允许您将值进行更改。
+因此在下面的示例中，我们将用 seqlevelStyle() 将 「UCSC」 转换为基于命名规定的 「ensembl」 （然后再次转换）。
+
+
+
+
 
 ```{r}
 head(seqlevels(txdb))
@@ -529,71 +529,71 @@ seqlevelsStyle(txdb)
 seqlevelsStyle(txdb) <- "NCBI"
 head(seqlevels(txdb))
 
-## then change it back
+## 然后再进行转换
 seqlevelsStyle(txdb) <- "UCSC"
 head(seqlevels(txdb))
 ```
 
-In addition to being able to change the naming style used for an object with
-seqinfo data, you can also toggle which of the chromosomes are 'active' so that
-the software will ignore certain chromosomes.  By default, all of the
-chromosomes are set to be 'active'.  
+除了能够改变 seqinfo 数据对象的命名样式外，
+还可以更换「活跃的」染色体，以便软件忽略某些染色体。
+默认情况下，所有的染色体都被设置为「活跃的」。
+
 
 ```{r}
 head(isActiveSeq(txdb), n=30)
 ```
 
-But sometimes you might wish to ignore some of them. For example, lets suppose
-that you wanted to ignore the Y chromosome from our txdb. You could do that
-like so:
+但有时你可能希望忽略其中一些染色体。
+例如，假设您想要忽略 txdb 数据中的 Y 染色体。你可以这样做:
+
 
 ```{r eval=FALSE}
 isActiveSeq(txdb)["chrY"] <- FALSE
 head(isActiveSeq(txdb), n=26)
 ```
 
-## TxDb exercises
+## TxDb 练习
 
-Exercise 5: Use the accessors for the TxDb.Hsapiens.UCSC.hg19.knownGene package
-to retrieve the gene id, transcript name and transcript chromosome for all the
-transcripts.  Do this using both the select() method and also using the
-transcripts() method.   What is the difference in the output?
+练习 5: 访问 **TxDb.Hsapiens.UCSC.hg19** 包能检索所有转录本的基因 ID 、
+转录本名称和转录本染色体。使用 select() 和 transcript() 也可以达到目的。输出结果有什么不同?
 
-Exercise 6: Load the TxDb.Athaliana.BioMart.plantsmart22 package. This package
-is not from UCSC and it is based on plantsmart.  Now use select or one of the
-range based accessors to look at the gene ids from this TxDb object.  How do
-they compare to what you saw in the TxDb.Hsapiens.UCSC.hg19.knownGene package?
 
+
+练习 6: 加载 **TxDb.Athaliana.BioMart.plantsmart22** 包。这个包的数据资源并非取材于 UCSC 数据库，
+而是基于 plantsmart 数据库。现在使用 select() 或基于范围的访问函数来查看来自这个 TxDb 对象的基因 ID 。
+它们与您在 TxDb.Hsapiens.UCSC.hg19.knownGene 包中看到的内容相比如何？
 <p class="back_to_top">[ <a href="#top">Back to top</a> ]</p>
 
 
-# Organism.dplyr src_organism Objects
 
-So what happens if you have data from multiple different Annotation objects.
-For example, what if you had gene SYMBOLS (found in an OrgDb object) and you
-wanted to easily match those up with known gene transcript names from a UCSC
-based TxDb object? There is an ideal tool that can help with this kind of
-problem and it's called an src_organism object from the Organism.dplyr package.
-src_organism objects and their related methods are able to query each of OrgDb
-and TxDb resources for you and then merge the results back together in way that
-lets you pretend that you only have one source for all your annotations.
+
+# Organism.dplyr 包中 src_organism 对象
+
+如果有来自多个不同 Annotation 对象的数据会发生什么。
+例如，如果您在 OrgDb 对象中发现基因符号，
+然后您想轻松地将这些符号与基于 UCSC 的 TxDb 对象的已知基因转录本进行匹配，该怎么办？
+有一个理想的工具可以帮助解决这类问题，那就是 Organism.dplyr 包中的src_organism 对象。
+ src_organism 对象及其相关函数能够为您查询每个 OrgDb 和 TxDb 对象的资源，
+然后将结果合并在一起，这样您就可以设想所有注释只有一个来源。
+
+
 
 ```{r}
 library(Organism.dplyr)
 ```
 
-src_organism objects can be created for organisms that have both an OrgDb and a
-TxDb.  To see organisms that can have src_organism objects made, use the
-function supportOrganisms():
+src_organism 对象可以同时具有 OrgDb 和 TxDb 对象。
+使用 supportOrganisms() 函数可以查看 src_organism 对象的有机体组成部分：
+
 ```{r}
 supported <- supportedOrganisms()
 print(supported, n=Inf)
 ```
 
-Notice how there are multiple entries for a single organism (e.g. three for
-Homo sapiens).  There is only one OrgDb per organism, but different TxDbs can be
-used. To specify a certain version of a TxDb to use, we can use the
-src_organism() function to create an src_organism object.
+请注意单个有机体有多个条目(例如， Homo sapiens 有三个条目)。
+每个有机体只有一个 OrgDb 对象，但是可以使用不同的 TxDbs 对象。
+我们可以使用 src_organism() 函数创建一个 src_organism 对象，
+用以指定所使用的 TxDb 对象的特定版本。
 ```{r}
 library(org.Hs.eg.db)
 library(TxDb.Hsapiens.UCSC.hg38.knownGene)
@@ -608,8 +608,8 @@ src <- src_organism("TxDb.Hsapiens.UCSC.hg38.knownGene", dbpath=tempfile())
 src
 ```
 
-We can also create one using the src_ucsc() function.  This will create an
-src_organism object using the most recent TxDb version available:
+另一个方法是使用 src_ucsc() 函数来创建。
+这将创建一个含有最新可用 TxDb 版本的 src_organism 对象:
 ```{r eval=FALSE}
 src <- src_ucsc("Homo sapiens")
 ```
@@ -617,39 +617,39 @@ src <- src_ucsc("Homo sapiens")
 src
 ```
 
-The five methods that worked for all of the other Db objects that we have
-discussed (keytypes(), columns(), keys(), select(), and mapIds()) all work for
-src_organism objects.  Here, we use keytypes() to show which keytypes can be
-passed to the keytype argument of select().
+对于我们已经讨论过的适用于所有其他 Db 对象的五种方法（ keytypes()、columns()、
+keys()、select() 和 mapIds()）也适用于 src_organism 对象。
+在这里，我们使用 keytypes() 来显示有哪些 keytype 可以传递给 select() 的 keytype 参数。
+
 ```{r}
 keytypes(src)
 ```
 
-Use columns() to show which keytypes can be passed to the keytype argument of
-select().
+使用 columns() 显示哪些 keytypes 可以传递给 select() 的 keytype 参数。
+
 ```{r}
 columns(src)
 ```
 
-And that's it. You can now use these objects in the same way that you use OrgDb
-or TxDb objects. It works the same as the base objects that it contains:
+就是这样。现在您可以像使用 OrgDb 对象或 TxDb 对象一样来使用这些对象。
+它的工作原理与它包含的基本对象的工作原理一样:
 ```{r}
 select(src, keys="4488", columns=c("symbol", "tx_name"), keytype="entrez")
 ```
 
-Organism.dplyr also supports numerous Genomic Extractor functions allowing users
-to filter based on information contained in the OrgDb and TxDb objects.  To see
-the filters supported by a src_organism() object, use supportedFIlters():
+ Organism.dplyr 包也支持许多提取基因组数据的函数，
+允许用户根据 OrgDb 和 TxDb 对象中包含的信息进行筛选。
+使用 supportedFIlters() 可以查看 src_organism() 对象支持的筛选函数：
 ```{r}
 head(supportedFilters(src))
 ```
 
-The ranged based accessors such as those in GenomicFeatures will also work.
-There are also "_tbl" functions (e.g. transcripts_tbl()) that return tbl
-objects instead of GRanges objects.  Complex filter statements can be given as
-input.  Here we declare a GRangesFilter and use two different type-returning
-accessors to query transcripts that either start with "SNORD" and are within our
-given GRangesFilter, or have symbol with symbol "ADA":
+基于范围的访问函数（如 GenomicFeatures 中的函数）也可以在这里使用。
+还有 「_tbl」 函数（例如 transcripts_tbl() ）返回 tbl 对象，而不是 GRanges 对象。
+复杂的筛选语句可以作为输入。
+在这里，我们使用 GRangesFilter 函数，并使用两个返回不同的类型的访问函数来查询转录本，
+这些转录本要么以 「SNORD」 开头，并且位于我们给定的 GRangesFilter 中，要么具有 「ADA」 的符号：
+
 
 ```{r}
 gr <- GRangesFilter(GenomicRanges::GRanges("chr1:44000000-55000000"))
@@ -658,53 +658,53 @@ transcripts(src, filter=~(symbol %startsWith% "SNORD" & gr) | symbol == "ADA")
 transcripts_tbl(src, filter=~(symbol %startsWith% "SNORD" & gr) | symbol == "ADA")
 ```
 
-## Organism.dplyr exercises
+## Organism.dplyr 练习
 
-Exercise 7: Use the src_organism object to look up the gene symbol, transcript
-start and chromosome using select(). Then do the same thing using transcripts.
-You might expect that this call to transcripts will look the same as it did for
-the TxDb object, but (temporarily) it will not.
+练习 7: 使用 select() 函数查询 src_organic 对象中的基因符号、转录起始和染色体。
+然后用 transcripts() 函数做同样的事情。
+您可能期望调用 transcripts() 的结果与调用 TxDb 对象的结果看起来一样，但(暂时)不会。
 
-Exercise 8: Look at the results from call the columns method on the src_organism
-object and compare that to what happens when you call columns on the
-org.Hs.eg.db object and then look at a call to columns on the
-TxDb.Hsapiens.UCSC.hg19.knownGene object.
 
-Exercise 9: Use the src_organism object with the transcripts method to look up
-the entrez gene IDs for all gene symbols that contain the letter 'X'.
+练习 8: 查看在 src_organism 对象上调用 columns() 函数的结果，
+并将其与在 org.Hs.eg.db 对象上调用 columns() 的结果进行比较，
+然后查看在 TxDb.Hsapiens.UCSC.hg19.knownGene 对象上调用 columns() 的结果。
+
+
+练习 9: 使用 transcripts() 查询 src_organism 对象中包含字母 「X」 的所有基因符号的 entrez 基因 ID。
+
 
 
 <p class="back_to_top">[ <a href="#top">Back to top</a> ]</p>
 
 
-# BSgenome Objects
+# BSgenome 对象
 
-Another important annotation resource type is a BSgenome package[10].  There
-are many BSgenome packages in the repository for you to choose from.  And you
-can learn which organisms are already supported by using the
-available.genomes() function.
+另一种重要的注释资源类型是 **BSgenome** 包[10]。
+存储库中有许多 **BSgenome** 包供您选择。
+您还可以使用 available.genomes() 函数来了解其中含有哪些生物体。
+
 
 ```{r}
 head(available.genomes())
 ```
 
-Unlike the other resources that we have discussed here, these packages are
-meant to contain sequence data for a specific genome build of an organism.  You
-can load one of these packages in the usual way. And each of them normally has
-an alias for the primary object that is shorter than the full package name (as
-a convenience):
+与我们在这里讨论过的其他资源不同，
+这些包旨在包含一个生物体特定基因组构建的序列数据。
+您可以以常规方式加载这些包之一。
+每个对象通常都有一个主对象的别名，该别名比完整包名称短（为方便起见）:
+
 
 ```{r}
 ls(2)
 Hsapiens
 ```
 
-The getSeq method is a useful way of extracting data from these packages. This
-method takes several arguments but the important ones are the 1st two.  The 1st
-argument specifies the BSgenome object to use and the second argument (names)
-specifies what data you want back out.  So for example, if you call it and give
-a character vector that names the seqnames for the object then you will get the
-sequences from those chromosomes as a DNAStringSet object.
+ getSeq() 函数是从这些包中提取数据的有用方法。
+此函数包含几个参数，但重要的参数是前两个参数。
+第一个参数指定所使用的 BSgenome 对象，第二个参数（名称）指定要返回的数据。
+例如，如果您调用 getSeq() 并给出一个字符矢量 seqnames 来命名对象，
+则您将获得这些染色体的序列，以 DNAStringSet 对象方式存在。
+
 
 ```{r}
 seqNms <- seqnames(Hsapiens)
@@ -712,10 +712,10 @@ head(seqNms)
 getSeq(Hsapiens, seqNms[1:2])
 ```
 
-Whereas if you give the a GRanges object for the 2nd argument, you can instead
-get a DNAStringSet that corresponds to those ranges.  This can be a powerful
-way to learn what sequence was present from a particular range.  For example,
-here we can extract the range of a specific gene of interest like this.
+但是，如果为第二个参数提供 GRanges 对象，那么您会获取对应于这些范围的 DNAStringSet 数据对象。
+这可以是了解特定范围内存在序列的有力方法。
+例如，在这里，我们可以提取这样的特定基因的范围，如下。
+
 
 ```{r eval=FALSE}
 txby <- transcriptsBy(txdb, by="gene")
@@ -724,30 +724,30 @@ res <- getSeq(Hsapiens, geneOfInterest)
 res
 ```
 
-Additionally, the Biostrings[11] package has many useful functions for finding
-a pattern in a string set etc.  You may not have noticed when it happened, but
-the Biostrings package was loaded when you loaded the BSgenome object, so these
-functions will already be available for you to explore.
+此外， **Biostrings**[11] 包有许多有用的函数，用于在字符串集等中查找模式。
+您可能没有注意到它是什么时候发生的，当您加载了 BSgenome 对象时，
+**Biostrings** 包也被加载，所以这些功能已经可供您使用。
 
-## BSgenome exercises
 
-Exercise 10: Use what you have just learned to extract the sequence for the
-PTEN gene.
+## BSgenome 练习
+
+练习 10: 使用您刚刚学到的内容提取基因 PTEN 。
+
 
 <p class="back_to_top">[ <a href="#top">Back to top</a> ]</p>
 
 
 # biomaRt
 
-Another great annotation resource is the biomaRt package[5,6,7].  The biomaRt
-package exposes a huge family of different online annotation resources called
-marts.  Each mart is another of a set of online web resources that are
-following a convention that allows them to work with this package. So the first
-step in using biomaRt is always to load the package and then decide which
-"mart" you want to use. Once you have made your decision, you will then  use
-the useMart() method to create a mart object in your R session.  Here we are
-looking at the marts available and then choosing to use one of the most popular
-marts: the "ensembl"" mart.
+另一个伟大的注释资源是 **biomaRt** 包[5,6,7]。 
+**biomaRt** 包展现了一系列名为 marts 的不同的在线注释资源。
+每个 mart 是一系列在线网络资源中的另一种形式，这些资源遵循允许他们使用此包的约定。因此
+这些资源遵循允许他们使用此包的规定。
+因此，使用 **biomaRt** 的第一步是仍然加载包，然后决定要使用的 「mart」 。
+一旦做出决定，您将使用 useMart() 函数在 R 会话界面中创建一个 mart 对象。 
+在这里，我们看看可用的 「marts」 有哪些，然后选择使用最流行的 「marts」 之一: 「ensembl」 mart。
+
+
 
 ```{r}
 head(listMarts())
@@ -755,10 +755,10 @@ ensembl <- useMart("ensembl")
 ensembl
 ```
 
-Each 'mart' can contain datasets for multiple different things. So the next
-step is that you need to decide on a dataset.  Once you have chosen one, you
-will need to specify that dataset using the dataset argument when you call the
-useMart() constructor method. Here we will point to the dataset for humans.
+每个 「mart」 可以包含多个不同事物的数据集。因此，下一步是您需要选择数据集。
+选择一个数据集后，在调用 useMart() 构造函数时，需要使用 dataset 参数指定该数据集。
+在这里，我们将使用人的数据集。
+
 
 ```{r}
 head(listDatasets(ensembl))
@@ -766,40 +766,40 @@ ensembl <- useMart("ensembl",dataset="hsapiens_gene_ensembl")
 ensembl
 ```
 
-Next we need to think about attributes, values and filters. Lets start with
-attributes.  You can get a listing of the different kinds of attributes from
-biomaRt buy using the listAttributes method:
+接下来，我们需要考虑属性、值和筛选值（attributes、values 和 filters）。
+让我们从属性（ attributes ）开始。 
+您可以使用 listAttributes() 函数从 **biomaRt** 包中获取不同类型的属性列表:
 
 ```{r}
 head(listAttributes(ensembl))
 ```
 
-And you can see what the values for a particular attribute are by using the getBM method:
+使用 getBM() ，您会发现特定属性（ attributes ）有哪些值（ values ）：
 
 ```{r}
 head(getBM(attributes="chromosome_name", mart=ensembl))
 ```
 
-Attributes are the things that you can have returned from biomaRt.  They are
-analogous to what you get when you use the columns method with other objects.
+**biomaRt** 能返回属性（ attributes ）。
+它们与在其他对象上使用 columns() 函数时得到的结果类似。
 
-In the biomaRt package, filters are things that can be used with values to
-restrict or choose what comes back. The 'values' here are treated as keys that
-you are passing in and which you would like to know more information about.  In
-contrast, the filter represents the kind of key that you are searching for. So
-for example, you might choose a filter name of "chromosome_name" to go with
-specific value of "1".  Together these two argument values would request
-whatever attributes matched things on the 1st chromosome.  And just as there
-here is an accessor for attributes, there is also an accessor for filters:
+在 **biomaRt** 包中，筛选值（ filters ）可以与值（ values ）一起使用从而限制或选择返回的内容。
+此处的 「values」 视为传递的关键词（ keys ），您希望了解有关这些关键词的详细信息。 
+然而，筛选值（ filter ）表示要搜索的关键词的类型。
+比如说，您可以设定参数： 特定值（ values ）为 「1」，筛选值（ filter ）为 「chromosome_name」 。
+这两个参数值将请求第一条染色体上所匹配的任何属性。
+正如这里有属性的列表函数一样，也有一个用于筛选值的列表函数:
+
+
 
 ```{r}
 head(listFilters(ensembl))
 ```
 
-So now you know about attributes, values and filters, you can call the getBM
-method to put it all together and request specific data from the mart.  So for
-example, the following requests gene symbols and entrez gene IDs that are found
-on chromosome 1 of flies:
+现在您了解了属性（ attributes ）、值（ values ）和筛选值（ filters ），
+您可以调用 getBM() 函数将它们放在一起，并从 mart 中请求相关的特定数据。 
+例如，以下请求在苍蝇的 1 号染色体上找到基因符号和 entrez 基因 ID:
+
 
 ```{r}
 res <- getBM(attributes=c("hgnc_symbol", "entrezgene"),
@@ -808,112 +808,112 @@ res <- getBM(attributes=c("hgnc_symbol", "entrezgene"),
 head(res)
 ```
 
-Of course you may have noticed that a lot of the arguments for getBM are very
-similar to what you do when you call shsapienselect.  So if it's your
-preference you can now also use the standard select methods with mart objects.
+当然您可能已经注意到，有很多关于 getBM() 的参数与您调用 shsapienselect() 时所做的非常相似。
+因此，如果它是您的首选项，您现在也可以在 mart 对象上使用标准筛选方法。
+
 
 ```{r}
 head(columns(ensembl))
 ```
 
-## biomaRt exercises
+## biomaRt 练习
 
-Exercise 11: Pull down GO terms for entrez gene id "1" from human by
-using the ensembl "hsapiens_gene_ensembl" dataset.
+练习 11: 使用 ensembl 中的 「hsapiens_gene_ensembl」 数据集，从人的数据中提取 entrez 基因 ID 为 「1」 的 GO 术语。
 
 
-Exercise 12: Now compare the GO terms you just pulled down to the same
-GO terms from the org.Hs.eg.db package (which you can now retrieve
-using select()). What differences do you notice? Why do you suspect
-that is?
+
+练习 12: 现在将您刚刚提取的 GO 术语与 **org.Hs.eg.db** 包中的相同 GO 术语进行比较（可以使用 select() 检索该包）。
+您注意到哪些差异？为什么有这些差异?
+
 
 <p class="back_to_top">[ <a href="#top">Back to top</a> ]</p>
 
 
-# Creating annotation objects
 
-By now you are aware that Bioconductor has a lot of annotation resources.  But
-it is still completely impossible to have every annotation resource
-pre-packaged for every conceivable use.  Because of this, almost all annotation
-objects have special functions that can be called to create those objects (or
-the packages that load them) from generalized data resources or specific file
-types.  Below is a table with a few of the more popular options.
+# 创建 annotation 对象
 
-If you want this | And you have this | Then you could call this to help
+现在，您已经意识到 Bioconductor 有很多注释资源。
+但是，仍然完全不可能将每个注释资源预先收集在包内以满足所有可能的用途。
+因此，几乎所有注释对象都具有特殊的函数，它们可以创建包含通用数据资源或特定文件类型的这些对象（或能加载它们的包）。
+下表列出了一些比较热门的对象及函数。
+
+
+
+如果您希望结果是这些 | 并且您有这些数据 | 那么您可以调用相关函数
 ------------------ | ------------------------- | ------------------------------
 TxDb            |  tracks from UCSC    |  GenomicFeatures::makeTxDbPackageFromUCSC  
-TxDb            |  data from biomaRt   |  GenomicFeatures::makeTxDbPackageFromBiomaRt  
-TxDb            |  gff or gtf file     |  GenomicFeatures::makeTxDbFromGFF  
-OrgDb     |  custom data.frames         |  AnnotationForge::makeOrgPackage
-OrgDb     |  valid Taxonomy ID   |  AnnotationForge::makeOrgPackageFromNCBI
-ChipDb    |  org package & data.frame |  AnnotationForge::makeChipPackage
-BSgenome  |  fasta or twobit sequence files  | BSgenome::forgeBSgenomeDataPkg
+TxDb            |  biomaRt 数据   |  GenomicFeatures::makeTxDbPackageFromBiomaRt  
+TxDb            |  gff 或 gtf 文件     |  GenomicFeatures::makeTxDbFromGFF  
+OrgDb     |  特定的 data.frames         |  AnnotationForge::makeOrgPackage
+OrgDb     |  有效的 Taxonomy ID   |  AnnotationForge::makeOrgPackageFromNCBI
+ChipDb    |  org 包 & data.frame |  AnnotationForge::makeChipPackage
+BSgenome  |  fasta 或 twobit 序列文件  | BSgenome::forgeBSgenomeDataPkg
 
 
-In most cases the output for resource creation functions will be an annotation
-package that you can install.  
+在大多数情况下，所安装的注释包将是资源创建函数的输出。
 
-And there is unfortunately not enough space to demonstrate how to call each of
-these functions here.  But to do so is actually pretty straightforward and most
-such functions will be well documented with their associated manual pages and
-vignettes[3,4,10,12]. As usual, you can see the help page for any function
-right inside of R.
+不幸的是，在这里并没有足够的机会来演示如何调用这些函数。 
+但实际上，调用这些函数非常简单，此类大多数函数的解释和应用都很好地被记录于相关的手册页和范例中[3，4，10，12]。
+像往常一样，您可以在 R 内部看到任何函数的帮助页。
+
+
+
 
 ```{r,eval=FALSE}
 help("makeTxDbPackageFromUCSC")
 ```
 
-If you plan to make use of these kinds of functions then you should expect to
-consult the associated documentation first. These kinds of functions tend to
-have a lot of arguments and most of them also require that their input data
-meet some fairly specific criteria.  Finally, you should know that even after
-you have succeeded at creating an annotation package, you will also have to
-make use of the install.packages() function (with the repos argument=NULL) to
-install whatever package source directory has just been created.  
+此类函数往往有很多参数，而且大多数函数也会要求它们的输入数据满足一些特定的条件。
+最后，您应该知道，即使在成功创建注释包后，您也必须使用 install.package() 函数
+（使用参数 repos = NULL）来安装刚刚创建的任何包源目录。 
 
 
-# Important considerations
 
-The bioconductor project represents a very large and active codebase from an
-active and engaged community. Because of this, you should expect that the
-software described in this walkthrough will change over time and often in
-dramatic ways.  As an example, the getSeq function that is described in this
-chapter is expected to a big overhaul in the coming months.  When this happens
-the older function will be deprecated for a full release cycle (6 months) and
-then labeled as defunct for another release cycle before it is removed. This
-cycle is in place so that active users can be warned about what is happening
-and where they should look for the appropriate replacement functionality. But
-obviously, this system cannot warn end users if they have not been vigilant
-about updating their software to the latest version. So please take the time to
-always update your software to the latest version.
 
-To stay abreast of new developments users are encouraged to
-explore the [bioconductor website](http://bioconductor.org/) which contains
-many current walkthroughs and vignettes. Also visit the
-[support site](https://support.bioconductor.org/) where you can ask questions
-and engage in discussions.
+
+
+# 重要注意事项
+
+ Bioconductor 项目含有来自活跃社区的代码库。
+因此，您应该期望本演练中使用的软件会以戏剧化的方式随时间而变化。
+例如，本章中描述的 getSeq() 函数预计在未来几个月将进行大刀阔斧的改革。
+发生这种情况时，旧函数将在完全发布周期（ 6 个月）内弃用，
+然后在被删除之前，在另一个发布周期中将其标记为 defunct 。
+此周期已到位，因此可以警告活动用户当前发生的情况以及应在何处查找适当的替代函数。
+但显然，如果最终用户不注意软件最新版本的更新，这个系统本身也不会提醒最终用户。
+因此，请始终保持您的软件已经更新到最新版本。
+
+
+
+
+
+紧跟新发展，鼓励用户探索[ bioconductor 网站](http://biotores.org/)，其中包含许多当前的演练和示例。
+此外，请访问 [支持站点](https://support.biothe.org/)，您可以在那里提问并参与讨论。
+
+
+
 
 
 # sessionInfo()
 
-Package versions used in this tutorial:
+本教程中使用的包版本：
 
 ```{r}
 sessionInfo()
 ```
 
 
-# Acknowledgments
+# 致谢
 
-Research reported in this chapter was supported by the National Human Genome
-Research Institute of the National Institutes of Health under Award Number
-U41HG004059 and by the National Cancer Institute of the National Institutes of
-Health under Award Number U24CA180996. We also want to thank the numerous
-institutions who produced and maintained the data that is used for generating
-and updating the annotation resources described here.
+本章中报道的研究得到了国家卫生研究院国家人类基因组研究所的支持，编号为 U41HG004059，
+和国家卫生研究院国家癌症研究所，编号为 U24CA180996 。
+在这里，我们还要感谢众多产生并维护用于生成并更新此处描述的注释资源的数据的机构。
 
 
-# References
+
+
+
+# 参考文献
 
 1. Wolfgang Huber, Vincent J Carey, Robert Gentleman, Simon Anders, Marc
 Carlson, Benilton S Carvalho, Hector Corrada Bravo, Sean Davis,	Laurent Gatto,
@@ -966,31 +966,31 @@ representing biological sequences, and matching algorithms. R package version
 Database Packages. R package version 1.10.0.
 
 
-# Answers for exercises
+# 练习解答
 
-## Exercise 1:
+## 练习 1:
 
-The 1st thing you need to do is look for thing from UCSC
+首先您要做的是在 UCSC 数据库中查找 ah :
 ```{r}
 ahs <- query(ah, "UCSC")
 ```
 
-Then you can look for Genome values that match 'hg19' and a species that matches 'Homo sapiens'.
+然后,你可以寻找与 「hg19」 匹配的基因组值( genome )和与 「hg19」 相匹配的物种 ( species )。
 ```{r}
 ahs <- subset(ahs, ahs$genome=='hg19')
 length(ahs)
 ahs <- subset(ahs, ahs$species=='Homo sapiens')
 length(ahs)
 ```
-You might notice that the last two filtering steps are redundant (IOW doing the
-1st of them is the same as doing both of them.)  If this were not the case, we
-might suspect that there was a problem with the metadata.
+您可能会注意到最后两个筛选步骤是多余的(执行其中第一个步骤的 IOW 与执行这两个步骤相同)。 
+如果不是这样,我们可能怀疑元数据有问题。
 
 
-## Exercise 2:
 
-This pulls down the oreganno annotations.  Which are described on the
-UCSC site thusly: "This track displays literature-curated regulatory
+## 练习 2:
+
+这将搜索到 oreganno 注释。
+ UCSC 网站上这样描述:"This track displays literature-curated regulatory
 regions, transcription factor binding sites, and regulatory
 polymorphisms from ORegAnno (Open Regulatory Annotation). For more
 detailed information on a particular regulatory element, follow the
@@ -1005,7 +1005,7 @@ oreg
 ```
 
 
-## Exercise 3:
+## 练习 3:
 
 ```{r}
 keys <- "MSX2"
@@ -1014,28 +1014,28 @@ select(org.Hs.eg.db, keys, columns, keytype="SYMBOL")
 ```
 
 
-## Exercise 4:
+## 练习 4:
 
 ```{r}
-## 1st get all the gene symbols
+## 首先获得所有的基因符号
 orgSymbols <- keys(org.Hs.eg.db, keytype="SYMBOL")
-## and then use that to get all gene symbols matched to all entrez gene IDs
+## 其次提取所有与其基因符号匹配的 entrez 基因的 ID
 egr <- select(org.Hs.eg.db, keys=orgSymbols, "ENTREZID", "SYMBOL")
 length(egr$ENTREZID)
 length(unique(egr$ENTREZID))
-## VS:
+## 比较:
 length(egr$SYMBOL)
 length(unique(egr$SYMBOL))
-## So lets trap these symbols that are redundant and look more closely...
+## 让我们选出重复的符号,查看得更仔细...
 redund <- egr$SYMBOL
 badSymbols <- redund[duplicated(redund)]
 select(org.Hs.eg.db, badSymbols, "ENTREZID", "SYMBOL")
 ```
 
 
-## Exercise 5:
+## 练习 5:
 
-So to retrieve this information using select you need to do it like this:
+因此,要使用 select() 来检索此信息,您需要操作如下:
 
 ```{r}
 res1 <- select(TxDb.Hsapiens.UCSC.hg19.knownGene,
@@ -1045,31 +1045,31 @@ res1 <- select(TxDb.Hsapiens.UCSC.hg19.knownGene,
 head(res1)
 ```
 
-And to do it using transcripts you do it like this:
+使用 transcripts() 检索，您可以这样做:
 ```{r}
 res2 <- transcripts(TxDb.Hsapiens.UCSC.hg19.knownGene,
                     columns = c("gene_id","tx_name"))
 head(res2)
 ```
 
-Notice that in the 2nd case we don't have to ask for the chromosome,
-as transcripts() returns a GRanges object, so the chromosome will
-automatically be returned as part of the object.
+请注意,在第二种情况下,我们并没有要求染色体信息,
+但因为 transcripts() 返回一个 GRanges 对象,因此染色体将自动作为对象的一部分返回。
 
 
-## Exercise 6:
+
+## 练习 6:
 
 ```{r}
 res <- transcripts(TxDb.Athaliana.BioMart.plantsmart22, columns = c("gene_id"))
 ```
-You will notice that the gene ids for this package are TAIR locus IDs
-and are NOT entrez gene IDs like what you saw in the
-TxDb.Hsapiens.UCSC.hg19.knownGene package.  It's important to always
-pay attention to the kind of gene id is being used by the TxDb
-you are looking at.
+您会注意到，此包的基因 ID 是 TAIR 基因座 ID，
+并且不像您在 **TxDb.Hsapiens.UCSC.hg19.knownGene** 包中所见到的一样。
+请务必一直注意您正查看的 TxDb 对象中正使用的基因 ID 的类型。
 
 
-## Exercise 7:
+
+
+## 练习 7:
 
 ```{r eval=FALSE}
 keys <- keys(Homo.sapiens, keytype="TXID")
@@ -1080,67 +1080,67 @@ res1 <- select(Homo.sapiens,
 head(res1)
 ```
 
-And to do it using transcripts you do it like this:
+使用 transcripts() 检索，您可以这样做:
 ```{r}
 res2 <- transcripts(Homo.sapiens, columns="SYMBOL")
 head(res2)
 ```
 
 
-## Exercise 8:
+## 练习 8:
 
 ```{r}
 columns(Homo.sapiens)
 columns(org.Hs.eg.db)
 columns(TxDb.Hsapiens.UCSC.hg19.knownGene)
-## You might also want to look at this:
+## 您可能还希望这样查看:
 transcripts(Homo.sapiens, columns=c("SYMBOL","CHRLOC"))
 ```
-The key difference is that the TXSTART refers to the start of a
-transcript and originates in the TxDb object from the
-TxDb.Hsapiens.UCSC.hg19.knownGene package, while the CHRLOC refers to
-the same thing but originates in the OrgDb object from the
-org.Hs.eg.db package.  The point of origin is significant because the
-TxDb object represents a transcriptome from UCSC and the OrgDb
-is primarily gene centric data that originates at NCBI.  The upshot is
-that CHRLOC will not have as many regions represented as TXSTART,
-since there has to be an official gene for there to even be a record.
-The CHRLOC data is also locked in for org.Hs.eg.db as data for hg19,
-whereas you can swap in a different TxDb object to match the
-genome you are using to make it hg18 etc.  For these reasons, we
-strongly recommend using TXSTART instead of CHRLOC.  Howeverm CHRLOC
-still remains in the org packages for historical reasons.
+关键区别是， TXSTART 引用 transcript 的开头，源自 **TxDb.Hsapiens.UCSC.hg19.chGene** 包的 TxDb 对象,
+尽管 CHRLOC 引用相同内容，但其来自 **org.Hs.eg.db** 中的 OrgDb 对象。
+原点很重要，因为 TxDb 对象表示来自 UCSC 的转录组，而 OrgDb 对象主要是来源于 NCBI 的基因中心数据。
+结果表明 CHRLOC 的区域不会像 TXSTART 那样多，因为其只记录一个官方基因。
+ CHRLOC 数据作为 hg19 的数据被锁定在 org.Hs.eg.db ，但您可以转换不同的 TxDb 对象从而匹配 hg18 等的数据。 
+出于这些原因，我们强烈建议使用 TXSTART 而不是 CHRLOC 。 
+然而由于历史原因， CHRLOC 仍然保存在 **org** 包中。
 
 
-## Exercise 9:
 
-To find the keys that match, make use of the pattern and column arguments.
+
+
+
+
+
+
+## 练习 9:
+
+要查找匹配的关键词，充分利用 pattern 和 column 参数。
 ```{r}
 xk = head(keys(Homo.sapiens, keytype="ENTREZID", pattern="X", column="SYMBOL"))
 xk
 ```
-select verifies the results
+select() 验证结果
 ```{r}
 select(Homo.sapiens, xk, "SYMBOL", "ENTREZID")
 ```
 
 
-## Exercise 10:
+## 练习 10:
 
 ```{r eval=FALSE}
-## Get the transcript ranges grouped by gene
+## 按基因分组获取转录本范围
 txby <- transcriptsBy(Homo.sapiens, by="gene")
-## look up the entrez ID for the gene symbol 'PTEN'
+## 查找基因符号 「PTEN」 的 entrez ID  
 select(Homo.sapiens, keys='PTEN', columns='ENTREZID', keytype='SYMBOL')
-## subset that genes transcripts
+## 提取基因转录本
 geneOfInterest <- txby[["5728"]]
-## extract the sequence
+## 提取序列
 res <- getSeq(Hsapiens, geneOfInterest)
 res
 ```
 
 
-## Exercise 11:
+## 练习 11:
 
 ```{r}
 ensembl <- useMart("ensembl",dataset="hsapiens_gene_ensembl")
@@ -1151,25 +1151,29 @@ getBM(attributes=c('go_id', 'entrezgene'),
 
 ```
 
-## Exercise 12:
+## 练习 12:
 
 ```{r}
 ids=c("1")
 select(org.Hs.eg.db, keys=ids, columns="GO", keytype="ENTREZID")
 ```
 
-When this exercise was written, there was a different number of GO
-terms returned from biomaRt than from org.Hs.eg.db.  This may not
-always be true in the future though as both of these resources are
-updated.  It is expected however that this web service, (which is
-updated continuously) will fall in and out of sync with the
-org.Hs.eg.db package (which is updated twice a year).  This is an
-important difference as each approach has different advantages and
-disadvantages.  The advantage to updating continuously is that you
-always have the very latest annotations which are frequently different
-for something like GO terms.  The advantage to using a package is that
-the results are frozen to a release of Bioconductor. And this can help
-you to get the same answers that you get today (reproducibility), a
-few years from now.
+在编写本练习时，从 **biomaRt** 包返回的 GO 术语数量与从 **org.Hs.eg.db** 包返回的 GO 术语数量不同。
+因为两种资源都会更新，所以在将来它们可能会相同。
+预计此网络服务（不断更新）将在 **biomaRt** 包中广泛使用但 **org.Hs.eg.db** 包(每年更新两次)并不同步。
+这是两个 Bioconductor 包中的一个重要区别，每种方法都有其优缺点。 
+持续更新的优点是，您始终拥有最新的注释，对于 GO 术语来说，这些注释通常有所不同。 
+使用包的优点是，结果都能被保存在 Bioconductor 的存储库中。这可以帮助您在几年后也能获得与今天相同的答案（可重现性）。
+
+
+
+
+
+
+
 
 <p class="back_to_top">[ <a href="#top">Back to top</a> ]</p>
+
+
+
+
